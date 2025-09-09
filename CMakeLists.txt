@@ -9,6 +9,7 @@ set(physics2d-lib-src
 )
 
 set(physics2d-lib-modules
+        src/physics2d/CollisionEvent.cppm
         src/physics2d/CollisionShape.cppm
         src/physics2d/Rigidbody2d.cppm
         src/physics2d/services/Physics2dSystemsService.cppm

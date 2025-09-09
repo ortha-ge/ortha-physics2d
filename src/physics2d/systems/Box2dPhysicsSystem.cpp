@@ -4,11 +4,14 @@ module;
 
 #include <box2d/box2d.h>
 #include <entt/entt.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 module Physics2d.Box2dPhysicsSystem;
 
 import Core.ProcessError;
 import Core.Spatial;
+import Physics2d.CollisionEvent;
 import Physics2d.CollisionShape;
 import Physics2d.Rigidbody2d;
 
@@ -23,8 +26,13 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 	};
 
 	b2ShapeId tryCreateCollisionShape(b2BodyId bodyId, b2ShapeDef shapeDef, const Core::Spatial& spatial, const BoxCollisionShapeDescriptor& descriptor) {
-		b2Polygon polygon = b2MakeBox(descriptor.width * spatial.scaleX * 0.5f, descriptor.height * spatial.scaleY * 0.5f);
+		b2Polygon polygon = b2MakeBox(descriptor.width * spatial.scale.x * 0.5f, descriptor.height * spatial.scale.y * 0.5f);
 		return b2CreatePolygonShape(bodyId, &shapeDef, &polygon);
+	}
+
+	b2ShapeId tryCreateCollisionShape(b2BodyId bodyId, b2ShapeDef shapeDef, const Core::Spatial& spatial, const CircleCollisionShapeDescriptor& descriptor) {
+		b2Circle circle{ {}, descriptor.radius };
+		return b2CreateCircleShape(bodyId, &shapeDef, &circle);
 	}
 
 	void tryCreateCollisionShape(
@@ -32,6 +40,10 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 		using namespace Box2dPhysicsSystemInternal;
 
 		b2ShapeDef shapeDef = b2DefaultShapeDef();
+		shapeDef.userData = reinterpret_cast<void*>(static_cast<uintptr_t>(entity));
+		shapeDef.enableHitEvents = true;
+		shapeDef.enableContactEvents = true;
+
 		b2ShapeId shapeId = std::visit([bodyId, shapeDef = std::move(shapeDef), &spatial](auto&& descriptor) {
 			return tryCreateCollisionShape(bodyId, std::move(shapeDef), spatial, descriptor);
 		}, collisionShape.descriptor);
@@ -86,14 +98,28 @@ namespace Physics2d {
 				tryCreateCollisionShape(registry, entity, rigidbody.bodyId, spatial, collisionShape);
 			});
 
+		registry.clear<CollisionEvent>();
+
 		b2World_Step(mWorld, timeStep, subStepCount);
 
 		registry.view<Box2dRigidbody, Core::Spatial>()
 			.each([](const Box2dRigidbody& box2dRigidbody, Core::Spatial& spatial) {
 				const b2Vec2 position{ b2Body_GetPosition(box2dRigidbody.bodyId) };
-				spatial.x = position.x;
-				spatial.y = position.y;
+				spatial.position.x = position.x;
+				spatial.position.y = position.y;
+
+				const b2Rot rotation{ b2Body_GetRotation(box2dRigidbody.bodyId) };
+				const float angle{ b2Rot_GetAngle(rotation) };
+				spatial.rotation = glm::angleAxis(angle, glm::vec3(0.0f, 0.0f, 1.0f));
 			});
+
+		b2ContactEvents contactEvents = b2World_GetContactEvents(mWorld);
+		for (int i = 0; i < contactEvents.hitCount; ++i) {
+			const auto& hitEvent{ contactEvents.hitEvents[i] };
+			const auto shapeEntityA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdA)));
+			const auto shapeEntityB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdB)));
+			registry.emplace<CollisionEvent>(shapeEntityA, shapeEntityA, shapeEntityB);
+		}
 	}
 
 	void Box2dPhysicsSystem::tryCreateRigidbody(
@@ -103,7 +129,7 @@ namespace Physics2d {
 
 		b2BodyDef bodyDef = b2DefaultBodyDef();
 		bodyDef.type = rigidbody.isStatic ? b2_staticBody : b2_dynamicBody;
-		bodyDef.position = b2Vec2{ spatial.x, spatial.y };
+		bodyDef.position = b2Vec2{ spatial.position.x, spatial.position.y };
 
 		b2BodyId bodyId{ b2CreateBody(world, &bodyDef) };
 		if (!b2Body_IsValid(bodyId)) {

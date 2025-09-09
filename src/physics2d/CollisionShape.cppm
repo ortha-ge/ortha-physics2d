@@ -11,7 +11,11 @@ export namespace Physics2d {
 		float height { 1.0f };
 	};
 
-	using CollisionShapeDescriptor = std::variant<BoxCollisionShapeDescriptor>;
+	struct CircleCollisionShapeDescriptor {
+		float radius { 1.0f };
+	};
+
+	using CollisionShapeDescriptor = std::variant<BoxCollisionShapeDescriptor, CircleCollisionShapeDescriptor>;
 
 	struct CollisionShape {
 		CollisionShapeDescriptor descriptor;

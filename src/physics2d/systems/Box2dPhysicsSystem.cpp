@@ -44,10 +44,13 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 		std::optional<CollisionShapeDescriptor> collisionShapeDescriptor;
 		if (std::holds_alternative<std::shared_ptr<Core::ResourceHandle>>(collisionShape.descriptor)) {
 			auto& resourceHandle = std::get<std::shared_ptr<Core::ResourceHandle>>(collisionShape.descriptor);
-			const auto* collisionShapeResource = Core::getResource<CollisionShapeDescriptor>(registry, resourceHandle);
-			if (collisionShapeResource) {
-				collisionShapeDescriptor = *collisionShapeResource;
+			auto&& [collisionShapeResourceEntity, collisionShapeResource] = Core::getResourceAndEntity<CollisionShapeDescriptor>(registry, resourceHandle);
+			if (!collisionShapeResource) {
+				Core::addProcessError(registry, entity, !Core::hasHaltedProcessError(registry, collisionShapeResourceEntity));
+				return;
 			}
+
+			collisionShapeDescriptor = *collisionShapeResource;
 		} else if (std::holds_alternative<CollisionShapeDescriptor>(collisionShape.descriptor)) {
 			collisionShapeDescriptor = std::get<CollisionShapeDescriptor>(collisionShape.descriptor);
 		}

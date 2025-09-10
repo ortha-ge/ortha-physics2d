@@ -9,6 +9,8 @@ set(physics2d-lib-src
 )
 
 set(physics2d-lib-modules
+        src/physics2d/BoxCollisionShape.cppm
+        src/physics2d/CircleCollisionShape.cppm
         src/physics2d/CollisionEvent.cppm
         src/physics2d/CollisionShape.cppm
         src/physics2d/Rigidbody2d.cppm
@@ -18,6 +20,8 @@ set(physics2d-lib-modules
 )
 
 set(physics2d-lib-reflection-modules
+        src/physics2d-reflection/BoxCollisionShape.cppm
+        src/physics2d-reflection/CircleCollisionShape.cppm
 )
 
 add_library(physics2d-lib STATIC ${physics2d-lib-src} ${physics2d-lib-modules} ${physics2d-lib-reflection-modules})

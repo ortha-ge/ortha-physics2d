@@ -10,6 +10,8 @@ module;
 module Physics2d.Box2dPhysicsSystem;
 
 import Core.ProcessError;
+import Core.ResourceHandle;
+import Core.ResourceHandleUtils;
 import Core.Spatial;
 import Physics2d.CollisionEvent;
 import Physics2d.CollisionShape;
@@ -25,12 +27,12 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 		b2ShapeId shapeId{};
 	};
 
-	b2ShapeId tryCreateCollisionShape(b2BodyId bodyId, b2ShapeDef shapeDef, const Core::Spatial& spatial, const BoxCollisionShapeDescriptor& descriptor) {
+	b2ShapeId tryCreateCollisionShape(b2BodyId bodyId, b2ShapeDef shapeDef, const Core::Spatial& spatial, const BoxCollisionShape& descriptor) {
 		b2Polygon polygon = b2MakeBox(descriptor.width * spatial.scale.x * 0.5f, descriptor.height * spatial.scale.y * 0.5f);
 		return b2CreatePolygonShape(bodyId, &shapeDef, &polygon);
 	}
 
-	b2ShapeId tryCreateCollisionShape(b2BodyId bodyId, b2ShapeDef shapeDef, const Core::Spatial& spatial, const CircleCollisionShapeDescriptor& descriptor) {
+	b2ShapeId tryCreateCollisionShape(b2BodyId bodyId, b2ShapeDef shapeDef, const Core::Spatial& spatial, const CircleCollisionShape& descriptor) {
 		b2Circle circle{ {}, descriptor.radius };
 		return b2CreateCircleShape(bodyId, &shapeDef, &circle);
 	}
@@ -39,6 +41,21 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 		entt::registry& registry, const entt::entity entity, b2BodyId bodyId, const Core::Spatial& spatial, const CollisionShape& collisionShape) {
 		using namespace Box2dPhysicsSystemInternal;
 
+		std::optional<CollisionShapeDescriptor> collisionShapeDescriptor;
+		if (std::holds_alternative<std::shared_ptr<Core::ResourceHandle>>(collisionShape.descriptor)) {
+			auto& resourceHandle = std::get<std::shared_ptr<Core::ResourceHandle>>(collisionShape.descriptor);
+			const auto* collisionShapeResource = Core::getResource<CollisionShapeDescriptor>(registry, resourceHandle);
+			if (collisionShapeResource) {
+				collisionShapeDescriptor = *collisionShapeResource;
+			}
+		} else if (std::holds_alternative<CollisionShapeDescriptor>(collisionShape.descriptor)) {
+			collisionShapeDescriptor = std::get<CollisionShapeDescriptor>(collisionShape.descriptor);
+		}
+
+		if (!collisionShapeDescriptor) {
+			return;
+		}
+
 		b2ShapeDef shapeDef = b2DefaultShapeDef();
 		shapeDef.userData = reinterpret_cast<void*>(static_cast<uintptr_t>(entity));
 		shapeDef.enableHitEvents = true;
@@ -46,7 +63,7 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 
 		b2ShapeId shapeId = std::visit([bodyId, shapeDef = std::move(shapeDef), &spatial](auto&& descriptor) {
 			return tryCreateCollisionShape(bodyId, std::move(shapeDef), spatial, descriptor);
-		}, collisionShape.descriptor);
+		}, *collisionShapeDescriptor);
 
 		if (!b2Shape_IsValid(shapeId)) {
 			Core::addProcessError(registry, entity, "Failed to create box2d shape.");
@@ -98,7 +115,10 @@ namespace Physics2d {
 				tryCreateCollisionShape(registry, entity, rigidbody.bodyId, spatial, collisionShape);
 			});
 
-		registry.clear<CollisionEvent>();
+		registry.view<CollisionEvent>()
+			.each([&registry](const entt::entity entity, const CollisionEvent& collisionEvent) {
+				registry.destroy(entity);
+			});
 
 		b2World_Step(mWorld, timeStep, subStepCount);
 
@@ -115,10 +135,11 @@ namespace Physics2d {
 
 		b2ContactEvents contactEvents = b2World_GetContactEvents(mWorld);
 		for (int i = 0; i < contactEvents.hitCount; ++i) {
+			const entt::entity collisionEntity{ registry.create() };
 			const auto& hitEvent{ contactEvents.hitEvents[i] };
 			const auto shapeEntityA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdA)));
 			const auto shapeEntityB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdB)));
-			registry.emplace<CollisionEvent>(shapeEntityA, shapeEntityA, shapeEntityB);
+			registry.emplace<CollisionEvent>(collisionEntity, shapeEntityA, shapeEntityB);
 		}
 	}
 

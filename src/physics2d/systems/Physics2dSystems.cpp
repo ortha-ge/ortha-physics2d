@@ -6,10 +6,10 @@ module Physics2d.Systems;
 
 namespace Physics2d {
 
-	Physics2dSystems::Physics2dSystems(Core::EnTTRegistry& registry, Core::Scheduler& scheduler)
+	Physics2dSystems::Physics2dSystems(Core::EnTTRegistry& registry, Core::Scheduler& scheduler, Core::Timer& timer)
 		: mRegistry{ registry }
 		, mScheduler{ scheduler }
-		, mBox2dPhysicsSystem(registry, scheduler) {
+		, mBox2dPhysicsSystem(registry, scheduler, timer) {
 
 		mTickHandle = mScheduler.schedule([this] {
 			tickSystem(mRegistry);

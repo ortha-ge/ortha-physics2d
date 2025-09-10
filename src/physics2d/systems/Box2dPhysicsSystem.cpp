@@ -80,9 +80,10 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 
 namespace Physics2d {
 
-	Box2dPhysicsSystem::Box2dPhysicsSystem(Core::EnTTRegistry& registry, Core::Scheduler& scheduler)
+	Box2dPhysicsSystem::Box2dPhysicsSystem(Core::EnTTRegistry& registry, Core::Scheduler& scheduler, const Core::Timer& timer)
 		: mRegistry{ registry }
-		, mScheduler{ scheduler } {
+		, mScheduler{ scheduler }
+		, mTimer{ timer } {
 
 		b2WorldDef worldDef = b2DefaultWorldDef();
 		worldDef.gravity = b2Vec2{ 0.0f, 10.0f };
@@ -90,7 +91,7 @@ namespace Physics2d {
 		mWorld = b2CreateWorld(&worldDef);
 
 		mTickHandle = mScheduler.schedule([this] {
-			tickSystem(mRegistry);
+			tickSystem(mRegistry, mTimer);
 		});
 	}
 
@@ -101,10 +102,8 @@ namespace Physics2d {
 		mWorld = {};
 	}
 
-	void Box2dPhysicsSystem::tickSystem(entt::registry& registry) {
+	void Box2dPhysicsSystem::tickSystem(entt::registry& registry, const Core::Timer& timer) {
 		using namespace Box2dPhysicsSystemInternal;
-		constexpr float timeStep = 1.0f / 60.0f;
-		constexpr int subStepCount = 4;
 
 		registry.view<Rigidbody, Core::Spatial>(entt::exclude<Box2dRigidbody, Core::ProcessError>)
 			.each([this, &registry](const entt::entity entity, const Rigidbody& rigidbody, const Core::Spatial& spatial) {
@@ -123,7 +122,16 @@ namespace Physics2d {
 				registry.destroy(entity);
 			});
 
-		b2World_Step(mWorld, timeStep, subStepCount);
+		constexpr float timeStep = 1.0f / 60.0f;
+		constexpr int subStepCount = 4;
+
+		float accumulatedTime = 0.0f;
+		size_t physicsTicks = 0;
+		while (accumulatedTime < timer.getDeltaT()) {
+			b2World_Step(mWorld, timeStep, subStepCount);
+			accumulatedTime += timeStep;
+			++physicsTicks;
+		}
 
 		registry.view<Box2dRigidbody, Core::Spatial>()
 			.each([](const Box2dRigidbody& box2dRigidbody, Core::Spatial& spatial) {

@@ -6,6 +6,7 @@ export module Physics2d.Systems;
 
 import Core.EnTTRegistry;
 import Core.Scheduler;
+import Core.Timer;
 import Physics2d.Box2dPhysicsSystem;
 
 export namespace Physics2d {
@@ -13,7 +14,7 @@ export namespace Physics2d {
 	class Physics2dSystems {
 	public:
 
-		Physics2dSystems(Core::EnTTRegistry&, Core::Scheduler&);
+		Physics2dSystems(Core::EnTTRegistry&, Core::Scheduler&, Core::Timer&);
 		~Physics2dSystems();
 
 		void tickSystem(entt::registry&);

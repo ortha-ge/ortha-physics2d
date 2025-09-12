@@ -76,14 +76,58 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 		registry.emplace<Box2dShape>(entity, shapeId);
 	}
 
+	void destroyRigidbody(entt::registry& registry, const entt::entity entity) {
+		if (!registry.all_of<Box2dRigidbody>(entity)) {
+			return;
+		}
+
+		Box2dRigidbody& rigidBody = registry.get<Box2dRigidbody>(entity);
+		if (!b2Body_IsValid(rigidBody.bodyId)) {
+			return;
+		}
+
+		b2DestroyBody(rigidBody.bodyId);
+	}
+
+	void destroyCollisionShape(entt::registry& registry, const entt::entity entity) {
+		if (!registry.all_of<Box2dShape>(entity)) {
+			return;
+		}
+
+		Box2dShape& shape = registry.get<Box2dShape>(entity);
+		if (!b2Shape_IsValid(shape.shapeId)) {
+			return;
+		}
+
+		b2DestroyShape(shape.shapeId, true);
+	}
+
+	void connectCallbacks(entt::registry& registry) {
+		registry.on_destroy<Box2dRigidbody>()
+			.connect<&destroyRigidbody>();
+
+		registry.on_destroy<Box2dShape>()
+			.connect<&destroyCollisionShape>();
+	}
+
+	void disconnectCallbacks(entt::registry& registry) {
+		registry.on_destroy<Box2dRigidbody>()
+			.disconnect<&destroyRigidbody>();
+
+		registry.on_destroy<Box2dShape>()
+			.disconnect<&destroyCollisionShape>();
+	}
+
 } // namespace Physics2d::Box2dPhysicsSystemInternal
 
 namespace Physics2d {
 
-	Box2dPhysicsSystem::Box2dPhysicsSystem(Core::EnTTRegistry& registry, Core::Scheduler& scheduler, const Core::Timer& timer)
-		: mRegistry{ registry }
+	Box2dPhysicsSystem::Box2dPhysicsSystem(Core::EnTTRegistry& _registry, Core::Scheduler& scheduler, const Core::Timer& timer)
+		: mRegistry{ _registry }
 		, mScheduler{ scheduler }
 		, mTimer{ timer } {
+
+		using namespace Box2dPhysicsSystemInternal;
 
 		b2WorldDef worldDef = b2DefaultWorldDef();
 		worldDef.gravity = b2Vec2{ 0.0f, 10.0f };
@@ -93,9 +137,15 @@ namespace Physics2d {
 		mTickHandle = mScheduler.schedule([this] {
 			tickSystem(mRegistry, mTimer);
 		});
+
+		connectCallbacks(mRegistry);
 	}
 
 	Box2dPhysicsSystem::~Box2dPhysicsSystem() {
+		using namespace Box2dPhysicsSystemInternal;
+
+		disconnectCallbacks(mRegistry);
+
 		mScheduler.unschedule(std::move(mTickHandle));
 
 		b2DestroyWorld(mWorld);

@@ -13,6 +13,7 @@ import Core.ProcessError;
 import Core.ResourceHandle;
 import Core.ResourceHandleUtils;
 import Core.Spatial;
+import Physics2d.ApplyForceRequest;
 import Physics2d.CollisionEvent;
 import Physics2d.CollisionShape;
 import Physics2d.Rigidbody2d;
@@ -102,6 +103,26 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 		b2DestroyShape(shape.shapeId, true);
 	}
 
+	void applyForce(const Box2dRigidbody& box2dRigidBody, const ApplyForceRequest& applyForceRequest) {
+		if (!b2Body_IsValid(box2dRigidBody.bodyId)) {
+			return;
+		}
+
+		b2Vec2 force{ applyForceRequest.force.x, applyForceRequest.force.y };
+		b2Vec2 center{ b2Body_GetWorldCenterOfMass(box2dRigidBody.bodyId) };
+		center.x += applyForceRequest.center.x;
+		center.y += applyForceRequest.center.y;
+
+		switch (applyForceRequest.type) {
+			case ForceType::Force:
+				b2Body_ApplyForce(box2dRigidBody.bodyId, std::move(force), std::move(center), true);
+				break;
+			case ForceType::Impulse:
+				b2Body_ApplyLinearImpulse(box2dRigidBody.bodyId, std::move(force), std::move(center), true);
+				break;
+		}
+	}
+
 	void connectCallbacks(entt::registry& registry) {
 		registry.on_destroy<Box2dRigidbody>()
 			.connect<&destroyRigidbody>();
@@ -167,6 +188,13 @@ namespace Physics2d {
 				tryCreateCollisionShape(registry, entity, rigidbody.bodyId, spatial, collisionShape);
 			});
 
+		registry.view<Box2dRigidbody, ApplyForceRequest>()
+			.each([&registry](const Box2dRigidbody& rigidBody, const ApplyForceRequest& applyForceRequest) {
+				applyForce(rigidBody, applyForceRequest);
+			});
+
+		registry.clear<ApplyForceRequest>();
+
 		registry.view<CollisionEvent>()
 			.each([&registry](const entt::entity entity, const CollisionEvent& collisionEvent) {
 				registry.destroy(entity);
@@ -194,13 +222,35 @@ namespace Physics2d {
 				spatial.rotation = glm::angleAxis(angle, glm::vec3(0.0f, 0.0f, 1.0f));
 			});
 
+		registry.view<Box2dRigidbody, Rigidbody>()
+			.each([](const Box2dRigidbody& box2dRigidBody, Rigidbody& rigidBody) {
+				rigidBody.isOnGround = false;
+
+				b2ContactData contactData[8];
+				int contactCount = b2Body_GetContactData(box2dRigidBody.bodyId, contactData, 8);
+				for (int i = 0; i < contactCount; ++i) {
+					const auto& contact{ contactData[i] };
+					const b2BodyId bodyIdA = b2Shape_GetBody(contact.shapeIdA);
+					const b2BodyId bodyIdB = b2Shape_GetBody(contact.shapeIdB);
+					const b2Vec2 bodyPosA = b2Body_GetPosition(bodyIdA);
+					const b2Vec2 bodyPosB = b2Body_GetPosition(bodyIdB);
+
+
+					if (B2_ID_EQUALS(box2dRigidBody.bodyId, bodyIdA) && bodyPosA.y < bodyPosB.y) {
+						rigidBody.isOnGround = true;
+					} else if (B2_ID_EQUALS(box2dRigidBody.bodyId, bodyIdB) && bodyPosB.y < bodyPosA.y) {
+						rigidBody.isOnGround = true;
+					}
+				}
+			});
+
 		b2ContactEvents contactEvents = b2World_GetContactEvents(mWorld);
 		for (int i = 0; i < contactEvents.hitCount; ++i) {
 			const entt::entity collisionEntity{ registry.create() };
 			const auto& hitEvent{ contactEvents.hitEvents[i] };
-			const auto shapeEntityA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdA)));
-			const auto shapeEntityB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdB)));
-			registry.emplace<CollisionEvent>(collisionEntity, shapeEntityA, shapeEntityB);
+			const auto entityA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdA)));
+			const auto entityB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdB)));
+			registry.emplace<CollisionEvent>(collisionEntity, entityA, entityB);
 		}
 	}
 

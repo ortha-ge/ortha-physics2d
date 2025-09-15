@@ -4,6 +4,7 @@ export namespace Physics2d {
 
 	struct Rigidbody {
 		bool isStatic{ true };
+		bool isOnGround{ false };
 	};
 
 } // namespace Physics2d

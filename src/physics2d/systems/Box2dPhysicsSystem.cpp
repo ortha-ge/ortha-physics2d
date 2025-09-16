@@ -6,6 +6,7 @@ module;
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <tracy/Tracy.hpp>
 
 module Physics2d.Box2dPhysicsSystem;
 
@@ -174,6 +175,7 @@ namespace Physics2d {
 	}
 
 	void Box2dPhysicsSystem::tickSystem(entt::registry& registry, const Core::Timer& timer) {
+		ZoneScopedN("Box2dPhysicsSystem::tickSystem");
 		using namespace Box2dPhysicsSystemInternal;
 
 		registry.view<Rigidbody, Core::Spatial>(entt::exclude<Box2dRigidbody, Core::ProcessError>)

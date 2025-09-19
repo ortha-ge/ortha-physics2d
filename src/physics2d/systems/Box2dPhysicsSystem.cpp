@@ -110,9 +110,13 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 		}
 
 		b2Vec2 force{ applyForceRequest.force.x, applyForceRequest.force.y };
+		force *= b2Body_GetMass(box2dRigidBody.bodyId);
+
 		b2Vec2 center{ b2Body_GetWorldCenterOfMass(box2dRigidBody.bodyId) };
 		center.x += applyForceRequest.center.x;
 		center.y += applyForceRequest.center.y;
+
+
 
 		switch (applyForceRequest.type) {
 			case ForceType::Force:

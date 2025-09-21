@@ -156,7 +156,7 @@ namespace Physics2d {
 		using namespace Box2dPhysicsSystemInternal;
 
 		b2WorldDef worldDef = b2DefaultWorldDef();
-		worldDef.gravity = b2Vec2{ 0.0f, 10.0f };
+		worldDef.gravity = b2Vec2{ 0.0f, 750.0f };
 
 		mWorld = b2CreateWorld(&worldDef);
 
@@ -209,12 +209,10 @@ namespace Physics2d {
 		constexpr float timeStep = 1.0f / 60.0f;
 		constexpr int subStepCount = 4;
 
-		float accumulatedTime = 0.0f;
-		size_t physicsTicks = 0;
-		while (accumulatedTime < timer.getDeltaT()) {
+		mAccumulatedDeltaT += timer.getDeltaT();
+		while (mAccumulatedDeltaT >= timeStep) {
 			b2World_Step(mWorld, timeStep, subStepCount);
-			accumulatedTime += timeStep;
-			++physicsTicks;
+			mAccumulatedDeltaT = std::max(0.0f, mAccumulatedDeltaT - timeStep);
 		}
 
 		registry.view<Box2dRigidbody, Core::Spatial>()

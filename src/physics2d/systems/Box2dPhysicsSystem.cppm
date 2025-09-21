@@ -31,6 +31,7 @@ export namespace Physics2d {
 		Core::TaskHandle mTickHandle;
 
 		b2WorldId mWorld{};
+		float mAccumulatedDeltaT{};
 
 	};
 

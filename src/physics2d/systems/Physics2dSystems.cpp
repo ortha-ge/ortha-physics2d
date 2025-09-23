@@ -8,8 +8,7 @@ namespace Physics2d {
 
 	Physics2dSystems::Physics2dSystems(Core::EnTTRegistry& registry, Core::Scheduler& scheduler, Core::Timer& timer)
 		: mRegistry{ registry }
-		, mScheduler{ scheduler }
-		, mBox2dPhysicsSystem(registry, scheduler, timer) {
+		, mScheduler{ scheduler } {
 
 		mTickHandle = mScheduler.schedule([this] {
 			tickSystem(mRegistry);

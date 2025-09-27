@@ -250,8 +250,12 @@ namespace Physics2d {
 
 		b2ContactEvents contactEvents = b2World_GetContactEvents(mWorld);
 		for (int i = 0; i < contactEvents.hitCount; ++i) {
-			const entt::entity collisionEntity{ registry.create() };
 			const auto& hitEvent{ contactEvents.hitEvents[i] };
+			if (!b2Shape_IsValid(hitEvent.shapeIdA) || !b2Shape_IsValid(hitEvent.shapeIdB)) {
+				continue;
+			}
+
+			const entt::entity collisionEntity{ registry.create() };
 			const auto entityA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdA)));
 			const auto entityB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Shape_GetUserData(hitEvent.shapeIdB)));
 			registry.emplace<CollisionEvent>(collisionEntity, entityA, entityB);

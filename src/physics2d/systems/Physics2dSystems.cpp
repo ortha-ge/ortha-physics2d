@@ -1,12 +1,12 @@
 module;
 
-#include <entt/entt.hpp>
+#include <utility>
 
 module Physics2d.Systems;
 
 namespace Physics2d {
 
-	Physics2dSystems::Physics2dSystems(Core::EnTTRegistry& registry, Core::Scheduler& scheduler, Core::Timer& timer)
+	Physics2dSystems::Physics2dSystems(entt::registry& registry, Core::Scheduler& scheduler, Core::Timer& timer)
 		: mRegistry{ registry }
 		, mScheduler{ scheduler } {
 

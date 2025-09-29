@@ -1,11 +1,9 @@
 module;
 
+#include <memory>
 #include <variant>
 
 #include <box2d/box2d.h>
-#include <entt/entt.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <tracy/Tracy.hpp>
 
 module Physics2d.Box2dPhysicsSystem;
@@ -18,6 +16,8 @@ import Physics2d.ApplyForceRequest;
 import Physics2d.CollisionEvent;
 import Physics2d.CollisionShape;
 import Physics2d.Rigidbody2d;
+import entt;
+import glm;
 
 namespace Physics2d::Box2dPhysicsSystemInternal {
 
@@ -148,8 +148,8 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 
 namespace Physics2d {
 
-	Box2dPhysicsSystem::Box2dPhysicsSystem(Core::EnTTRegistry& _registry, Core::Scheduler& scheduler, const Core::Timer& timer)
-		: mRegistry{ _registry }
+	Box2dPhysicsSystem::Box2dPhysicsSystem(entt::registry& registry, Core::Scheduler& scheduler, const Core::Timer& timer)
+		: mRegistry{ registry }
 		, mScheduler{ scheduler }
 		, mTimer{ timer } {
 

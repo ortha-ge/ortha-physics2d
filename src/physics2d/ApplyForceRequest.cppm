@@ -1,8 +1,6 @@
-module;
-
-#include <glm/glm.hpp>
-
 export module Physics2d.ApplyForceRequest;
+
+import glm;
 
 export namespace Physics2d {
 

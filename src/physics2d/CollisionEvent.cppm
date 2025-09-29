@@ -1,8 +1,6 @@
-module;
-
-#include <entt/entity/entity.hpp>
-
 export module Physics2d.CollisionEvent;
+
+import entt;
 
 export namespace Physics2d {
 

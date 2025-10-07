@@ -3,13 +3,13 @@ export module Physics2d.Reflection.CollisionShape;
 export import Physics2d.CollisionShape;
 
 import Core.EnTTComponentAttribute;
-import Core.ReflectionContext;
+import Core.Reflect;
 
 template <>
-void Core::reflect<Physics2d::CollisionShape>(ReflectionContext& reflectionContext) {
+void Core::reflect<Physics2d::CollisionShape>(Ortha::RTTI::ReflectionContext& reflectionContext) {
 	using namespace Physics2d;
 
 	reflectionContext.addClass<CollisionShape>("CollisionShape")
-		.annotate(createEnTTComponentAttribute<CollisionShape>())
-		.build();
+		//.annotate(createEnTTComponentAttribute<CollisionShape>())
+		;
 }

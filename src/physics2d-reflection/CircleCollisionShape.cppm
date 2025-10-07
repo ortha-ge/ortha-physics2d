@@ -2,12 +2,12 @@ export module Physics2d.Reflection.CircleCollisionShape;
 
 export import Physics2d.CircleCollisionShape;
 
-import Core.ReflectionContext;
+import Core.Reflect;
 
 template<>
-void Core::reflect<Physics2d::CircleCollisionShape>(ReflectionContext& reflectionContext) {
+void Core::reflect<Physics2d::CircleCollisionShape>(Ortha::RTTI::ReflectionContext& reflectionContext) {
 	using namespace Physics2d;
 	reflectionContext.addClass<CircleCollisionShape>("CircleCollisionShape")
-		.property("radius", &CircleCollisionShape::radius)
-	.build();
+		.field<&CircleCollisionShape::radius>("radius")
+	;
 }

@@ -2,13 +2,13 @@ export module Physics2d.Reflection.BoxCollisionShape;
 
 export import Physics2d.BoxCollisionShape;
 
-import Core.ReflectionContext;
+import Core.Reflect;
 
 template<>
-void Core::reflect<Physics2d::BoxCollisionShape>(ReflectionContext& reflectionContext) {
+void Core::reflect<Physics2d::BoxCollisionShape>(Ortha::RTTI::ReflectionContext& reflectionContext) {
 	using namespace Physics2d;
 	reflectionContext.addClass<BoxCollisionShape>("BoxCollisionShape")
-		.property("width", &BoxCollisionShape::width)
-		.property("height", &BoxCollisionShape::height)
-	.build();
+		.field<&BoxCollisionShape::width>("width")
+		.field<&BoxCollisionShape::height>("height")
+	;
 }

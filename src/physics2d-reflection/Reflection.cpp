@@ -1,10 +1,11 @@
 module Physics2d.Reflection;
 
-import Core.ReflectionContext;
+import Core.Reflect;
+import Ortha.RTTI.ReflectionContext;
 
 namespace Physics2d {
 
-	void reflectAll(Core::ReflectionContext& reflectionContext) {
+	void reflectAll(Ortha::RTTI::ReflectionContext& reflectionContext) {
 		using namespace Core;
 
 		reflect<BoxCollisionShape>(reflectionContext);

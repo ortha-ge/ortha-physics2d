@@ -1,9 +1,9 @@
-module Physics2d.Reflection;
+module Ortha.Physics2d.Reflection;
 
-import Core.Reflect;
+import Ortha.Core.Reflect;
 import Ortha.RTTI.ReflectionContext;
 
-namespace Physics2d {
+namespace Ortha::Physics2d {
 
 	void reflectAll(Ortha::RTTI::ReflectionContext& reflectionContext) {
 		using namespace Core;
@@ -14,4 +14,4 @@ namespace Physics2d {
 		reflect<Rigidbody>(reflectionContext);
 	}
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

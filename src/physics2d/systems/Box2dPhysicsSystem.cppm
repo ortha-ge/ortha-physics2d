@@ -2,16 +2,16 @@ module;
 
 #include <box2d/id.h>
 
-export module Physics2d.Box2dPhysicsSystem;
+export module Ortha.Physics2d.Box2dPhysicsSystem;
 
-import Core.Scheduler;
-import Core.Spatial;
-import Core.Timer;
-import Physics2d.CollisionShape;
-import Physics2d.Rigidbody2d;
+import Ortha.Core.Scheduler;
+import Ortha.Core.Spatial;
+import Ortha.Core.Timer;
+import Ortha.Physics2d.CollisionShape;
+import Ortha.Physics2d.Rigidbody2d;
 import entt;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	class Box2dPhysicsSystem {
 	public:
@@ -34,4 +34,4 @@ export namespace Physics2d {
 
 	};
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

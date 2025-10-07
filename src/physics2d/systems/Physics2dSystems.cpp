@@ -2,9 +2,9 @@ module;
 
 #include <utility>
 
-module Physics2d.Systems;
+module Ortha.Physics2d.Systems;
 
-namespace Physics2d {
+namespace Ortha::Physics2d {
 
 	Physics2dSystems::Physics2dSystems(entt::registry& registry, Core::Scheduler& scheduler, Core::Timer& timer)
 		: mRegistry{ registry }
@@ -23,4 +23,4 @@ namespace Physics2d {
 
 	}
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

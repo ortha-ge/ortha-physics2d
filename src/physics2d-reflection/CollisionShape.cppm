@@ -1,13 +1,13 @@
-export module Physics2d.Reflection.CollisionShape;
+export module Ortha.Physics2d.Reflection.CollisionShape;
 
-export import Physics2d.CollisionShape;
+export import Ortha.Physics2d.CollisionShape;
 
-import Core.EnTTComponentAttribute;
-import Core.Reflect;
+import Ortha.Core.EnTTComponentAttribute;
+import Ortha.Core.Reflect;
 
 template <>
-void Core::reflect<Physics2d::CollisionShape>(Ortha::RTTI::ReflectionContext& reflectionContext) {
-	using namespace Physics2d;
+void Core::reflect<Ortha::Physics2d::CollisionShape>(Ortha::RTTI::ReflectionContext& reflectionContext) {
+	using namespace Ortha::Physics2d;
 
 	reflectionContext.addClass<CollisionShape>("CollisionShape")
 		//.annotate(createEnTTComponentAttribute<CollisionShape>())

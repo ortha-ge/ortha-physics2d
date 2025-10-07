@@ -1,10 +1,10 @@
-export module Physics2d.Rigidbody2d;
+export module Ortha.Physics2d.Rigidbody2d;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	struct Rigidbody {
 		bool isStatic{ true };
 		bool isOnGround{ false };
 	};
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

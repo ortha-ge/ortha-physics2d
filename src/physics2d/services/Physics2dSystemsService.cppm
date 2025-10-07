@@ -1,13 +1,13 @@
 
-export module Physics2d.SystemsService;
+export module Ortha.Physics2d.SystemsService;
 
-import Core.EnTTRegistryService;
-import Core.SchedulerService;
-import Core.TimerService;
-import Physics2d.Systems;
+import Ortha.Core.EnTTRegistryService;
+import Ortha.Core.SchedulerService;
+import Ortha.Core.TimerService;
+import Ortha.Physics2d.Systems;
 import kangaru;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	void initPhysics2dSubSystems(Physics2dSystems&, kgr::container&);
 
@@ -16,4 +16,4 @@ export namespace Physics2d {
 			  Physics2dSystems, kgr::dependency<Core::EnTTRegistryService, Core::SchedulerService, Core::TimerService>>,
 		  kgr::autocall<kgr::invoke_method<initPhysics2dSubSystems>> {};
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

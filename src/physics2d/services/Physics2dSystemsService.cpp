@@ -1,11 +1,11 @@
-module Physics2d.SystemsService;
+module Ortha.Physics2d.SystemsService;
 
 import Ortha.RTTI.ReflectionContext;
 import Ortha.RTTI.ReflectionContextStack;
-import Physics2d.Box2dPhysicsSystemService;
-import Physics2d.Reflection;
+import Ortha.Physics2d.Box2dPhysicsSystemService;
+import Ortha.Physics2d.Reflection;
 
-namespace Physics2d {
+namespace Ortha::Physics2d {
 
 	void initPhysics2dSubSystems(Physics2dSystems&, kgr::container& container) {
 		using namespace Core;
@@ -15,4 +15,4 @@ namespace Physics2d {
 		container.emplace<Box2dPhysicsSystemService>();
 	}
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

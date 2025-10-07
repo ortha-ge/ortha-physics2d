@@ -1,10 +1,10 @@
-export module Physics2d.Systems;
+export module Ortha.Physics2d.Systems;
 
-import Core.Scheduler;
-import Core.Timer;
+import Ortha.Core.Scheduler;
+import Ortha.Core.Timer;
 import entt;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	class Physics2dSystems {
 	public:
@@ -22,4 +22,4 @@ export namespace Physics2d {
 
 	};
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

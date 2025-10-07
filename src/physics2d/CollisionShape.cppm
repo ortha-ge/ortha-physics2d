@@ -3,14 +3,14 @@ module;
 #include <memory>
 #include <variant>
 
-export module Physics2d.CollisionShape;
+export module Ortha.Physics2d.CollisionShape;
 
-export import Physics2d.BoxCollisionShape;
-export import Physics2d.CircleCollisionShape;
+export import Ortha.Physics2d.BoxCollisionShape;
+export import Ortha.Physics2d.CircleCollisionShape;
 
-import Core.ResourceHandle;
+import Ortha.Core.ResourceHandle;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	using CollisionShapeDescriptor = std::variant<BoxCollisionShape, CircleCollisionShape>;
 
@@ -18,4 +18,4 @@ export namespace Physics2d {
 		std::variant<CollisionShapeDescriptor, std::shared_ptr<Core::ResourceHandle>> descriptor;
 	};
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

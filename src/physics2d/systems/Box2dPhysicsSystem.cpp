@@ -6,20 +6,20 @@ module;
 #include <box2d/box2d.h>
 #include <tracy/Tracy.hpp>
 
-module Physics2d.Box2dPhysicsSystem;
+module Ortha.Physics2d.Box2dPhysicsSystem;
 
-import Core.ProcessError;
-import Core.ResourceHandle;
-import Core.ResourceHandleUtils;
-import Core.Spatial;
-import Physics2d.ApplyForceRequest;
-import Physics2d.CollisionEvent;
-import Physics2d.CollisionShape;
-import Physics2d.Rigidbody2d;
+import Ortha.Core.ProcessError;
+import Ortha.Core.ResourceHandle;
+import Ortha.Core.ResourceHandleUtils;
+import Ortha.Core.Spatial;
+import Ortha.Physics2d.ApplyForceRequest;
+import Ortha.Physics2d.CollisionEvent;
+import Ortha.Physics2d.CollisionShape;
+import Ortha.Physics2d.Rigidbody2d;
 import entt;
 import glm;
 
-namespace Physics2d::Box2dPhysicsSystemInternal {
+namespace Ortha::Physics2d::Box2dPhysicsSystemInternal {
 
 	struct Box2dRigidbody {
 		b2BodyId bodyId{};
@@ -144,9 +144,9 @@ namespace Physics2d::Box2dPhysicsSystemInternal {
 			.disconnect<&destroyCollisionShape>();
 	}
 
-} // namespace Physics2d::Box2dPhysicsSystemInternal
+} // namespace Ortha::Physics2d::Box2dPhysicsSystemInternal
 
-namespace Physics2d {
+namespace Ortha::Physics2d {
 
 	Box2dPhysicsSystem::Box2dPhysicsSystem(entt::registry& registry, Core::Scheduler& scheduler, const Core::Timer& timer)
 		: mRegistry{ registry }
@@ -280,4 +280,4 @@ namespace Physics2d {
 		registry.emplace<Box2dRigidbody>(entity, bodyId);
 	}
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

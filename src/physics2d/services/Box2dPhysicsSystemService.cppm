@@ -1,13 +1,13 @@
-export module Physics2d.Box2dPhysicsSystemService;
+export module Ortha.Physics2d.Box2dPhysicsSystemService;
 
-export import Physics2d.Box2dPhysicsSystem;
+export import Ortha.Physics2d.Box2dPhysicsSystem;
 
-import Core.EnTTRegistryService;
-import Core.SchedulerService;
-import Core.TimerService;
+import Ortha.Core.EnTTRegistryService;
+import Ortha.Core.SchedulerService;
+import Ortha.Core.TimerService;
 import kangaru;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	struct Box2dPhysicsSystemService
 		: kgr::single_service<

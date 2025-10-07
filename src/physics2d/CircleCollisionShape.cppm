@@ -1,9 +1,9 @@
-export module Physics2d.CircleCollisionShape;
+export module Ortha.Physics2d.CircleCollisionShape;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	struct CircleCollisionShape {
 		float radius { 1.0f };
 	};
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

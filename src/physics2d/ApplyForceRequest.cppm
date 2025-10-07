@@ -1,8 +1,8 @@
-export module Physics2d.ApplyForceRequest;
+export module Ortha.Physics2d.ApplyForceRequest;
 
 import glm;
 
-export namespace Physics2d {
+export namespace Ortha::Physics2d {
 
 	enum class ForceType {
 		Force,
@@ -15,4 +15,4 @@ export namespace Physics2d {
 		glm::vec2 center{};
 	};
 
-} // namespace Physics2d
+} // namespace Ortha::Physics2d

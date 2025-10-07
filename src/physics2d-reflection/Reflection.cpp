@@ -6,7 +6,7 @@ import Ortha.RTTI.ReflectionContext;
 namespace Ortha::Physics2d {
 
 	void reflectAll(Ortha::RTTI::ReflectionContext& reflectionContext) {
-		using namespace Core;
+		using namespace Ortha::Core;
 
 		reflect<BoxCollisionShape>(reflectionContext);
 		reflect<CircleCollisionShape>(reflectionContext);

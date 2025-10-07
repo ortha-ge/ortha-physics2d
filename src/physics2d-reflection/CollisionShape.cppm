@@ -5,11 +5,15 @@ export import Ortha.Physics2d.CollisionShape;
 import Ortha.Core.EnTTComponentAttribute;
 import Ortha.Core.Reflect;
 
-template <>
-void Core::reflect<Ortha::Physics2d::CollisionShape>(Ortha::RTTI::ReflectionContext& reflectionContext) {
-	using namespace Ortha::Physics2d;
+namespace Ortha::Core {
 
-	reflectionContext.addClass<CollisionShape>("CollisionShape")
-		//.annotate(createEnTTComponentAttribute<CollisionShape>())
-		;
+	template <>
+	void reflect<Physics2d::CollisionShape>(RTTI::ReflectionContext& reflectionContext) {
+		using namespace Physics2d;
+
+		reflectionContext.addClass<CollisionShape>("CollisionShape")
+			//.annotate(createEnTTComponentAttribute<CollisionShape>())
+			;
+	}
+
 }

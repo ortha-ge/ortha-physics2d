@@ -10,7 +10,7 @@ namespace Ortha::Physics2d {
 	void initPhysics2dSubSystems(Physics2dSystems&, kgr::container& container) {
 		using namespace Ortha::Core;
 		using namespace RTTI;
-		reflectAll(static_cast<ReflectionContext&>(getCurrentReflectionContext()));
+		reflectAll(ReflectionContextStack::getCurrentContext());
 
 		container.emplace<Box2dPhysicsSystemService>();
 	}

@@ -2,12 +2,12 @@ export module Ortha.Physics2d.Reflection.BoxCollisionShape;
 
 export import Ortha.Physics2d.BoxCollisionShape;
 
-import Ortha.Core.Reflect;
+import Ortha.RTTI.ReflectionContext;
 
-namespace Ortha::Core {
+namespace Ortha::RTTI {
 
 	template<>
-	void reflect<Physics2d::BoxCollisionShape>(RTTI::ReflectionContext& reflectionContext) {
+	void reflect<Physics2d::BoxCollisionShape>(ReflectionContext& reflectionContext) {
 		using namespace Physics2d;
 		reflectionContext.addClass<BoxCollisionShape>("BoxCollisionShape")
 			.field<&BoxCollisionShape::width>("width")

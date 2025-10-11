@@ -2,12 +2,12 @@ export module Ortha.Physics2d.Reflection.CircleCollisionShape;
 
 export import Ortha.Physics2d.CircleCollisionShape;
 
-import Ortha.Core.Reflect;
+import Ortha.RTTI.ReflectionContext;
 
-namespace Ortha::Core {
+namespace Ortha::RTTI {
 
 	template<>
-	void reflect<Physics2d::CircleCollisionShape>(RTTI::ReflectionContext& reflectionContext) {
+	void reflect<Physics2d::CircleCollisionShape>(ReflectionContext& reflectionContext) {
 		using namespace Physics2d;
 		reflectionContext.addClass<CircleCollisionShape>("CircleCollisionShape")
 			.field<&CircleCollisionShape::radius>("radius")
